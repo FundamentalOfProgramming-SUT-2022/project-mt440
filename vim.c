@@ -137,6 +137,7 @@ void insert(){
                 default:
                     j=i+1;
                     counter++;
+                    
                     break;
             }
         }
