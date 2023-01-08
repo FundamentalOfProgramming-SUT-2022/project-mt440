@@ -98,8 +98,8 @@ void insert(){
                         strncpy(name,amaliat+j,i-j);
                         toll_matn=i-j;
                     }
+                    int newline=0;
                     for(int z=0;z<toll_matn;z++){
-                        int newline=0;
                         if(name[z]==92&&name[z+1]=='n'){
                             matn[z-newline]='\n';
                             z++;
