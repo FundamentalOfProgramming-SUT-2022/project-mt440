@@ -166,16 +166,61 @@ void insert(){
         }
     }
 }
+void cat(){
+    int flag=1,j=0,a=0,counter=0,toll_matn;
+    int len=strlen(matn_amaliat);
+    for(int i=0;i<len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)==NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+    }
+    memset(name, '\0', sizeof(name));
+    if(matn_amaliat[j]=='"')
+        strncpy(name,matn_amaliat+j+1,len-j-2);
+    else
+        strncpy(name,matn_amaliat+j,len-j);
+    if(fopen(name,"r")==NULL){
+        invalids(2);
+        return;
+    }
+    else{
+        fptr=fopen(name,"r");
+        char ch;
+        do {
+    		ch = fgetc(fptr);
+	    	printf("%c", ch);
+    	} while (ch!=EOF);
+	    fclose(fptr);
+    }
+}
 int main(){
     mkdir("root");
     chdir("root");
     scanf("%s",&noe_amaliat);
     scanf("%[^/]s",&matn_file);
     scanf("/root/%[^\n]s",&matn_amaliat);
-    if(strstr(noe_amaliat,"createfile")){
+    if(!strcmp(noe_amaliat,"createfile")){
         creat_file();
     }
-    if(strstr(noe_amaliat,"insertstr")){
+    if(!strcmp(noe_amaliat,"insertstr")){
         insert();
+    }
+    if(!strcmp(noe_amaliat,"cat")){
+        cat();
     }
 }
