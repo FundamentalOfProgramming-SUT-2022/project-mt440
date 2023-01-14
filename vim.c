@@ -119,7 +119,7 @@ void insert(){
                     for(int z=0;z<toll_matn;z++){
                         if(name[z]==92&&name[z+1]=='n'){
                             if(name[z-1]==92)
-                                matn[z-newline]=='n';
+                                matn[z-newline]='n';
                             else
                                 matn[z-newline]='\n';
                             z++;
@@ -644,6 +644,115 @@ void cut(){
         }
     }
 }
+void pastestr(){
+    int flag=1,j=0,a=0,counter=0,fasele=0,satr=0,toll_matn;
+    int len=strlen(matn_amaliat);
+    for(int i=0;i<len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if(matn_amaliat[i]==' '&&flag){
+            memset(name, '\0', sizeof(name));
+            switch (counter){
+                case 0:
+                    memset(name, '\0', sizeof(name));
+                    if(matn_amaliat[i-1]=='"')
+                        strncpy(name,matn_amaliat+j+1,i-j-3);
+                    else
+                        strncpy(name,matn_amaliat+j,i-j);
+                    if(fopen(name,"r")==NULL){
+                        invalids(2);
+                        return;
+                    }
+                    else{
+                        fptr=fopen(name,"r+");
+                    }
+                    j=i+1;
+                    counter++;
+                    break;
+                case 1:
+                    i++;
+                    while (matn_amaliat[i]!=':'){
+                        satr=10*satr+matn_amaliat[i]-48;
+                        i++;
+                    }
+                    i++;
+                    while (i<len){
+                        fasele=10*fasele+matn_amaliat[i]-48;
+                        i++;
+                    }
+                    if(satr<=0||fasele<0){
+                        invalids(4);
+                        return;
+                    }
+                default :
+                    j=i+1;
+                    counter++;
+                    break;
+            }
+        }
+    }
+    int tedad=("%d",strlen(clipboard));
+        char character;
+        int shomare_satr=1;
+        int check_fasele=0;
+        int z=0,d=1;
+        while(shomare_satr<satr){
+            character=fgetc(fptr);
+            if(character=='\n')
+                shomare_satr++;
+            if(character==EOF){
+                invalids(3);
+                return;
+            }
+            matn_file[z]=character;
+            z++;
+        }
+        while(check_fasele<fasele){
+            character=fgetc(fptr);
+            if(character==EOF){
+                invalids(3);
+                return;
+            }
+            check_fasele++;
+            matn_file[z]=character;
+            z++;
+        }
+        len=z;
+        while(character!=EOF){
+            character=fgetc(fptr);
+            matn_file[z]=character;
+            z++;
+        }
+        fclose(fptr);
+        fptr=fopen(name_of_file,"w");
+        j=0;
+        for(int i=0;i<z-1+j;i++){
+            if(i>=len&&i<len+tedad){
+                fprintf(fptr,"%c",clipboard[j]);
+                j++;
+            }
+            else
+                fprintf(fptr,"%c",matn_file[i-j]);
+        }
+        fclose(fptr);
+        return;    
+}
 int main(){
     while (1){
         chdir("root");
@@ -669,6 +778,9 @@ int main(){
         }
         else if(!strcmp(noe_amaliat,"cutstr")){
             cut();
+        }
+        else if(!strcmp(noe_amaliat,"pastestr")){
+            pastestr();
         }
     }
 }
