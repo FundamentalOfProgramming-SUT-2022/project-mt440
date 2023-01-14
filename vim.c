@@ -235,7 +235,7 @@ void cat(){
     }
 }
 void removetstr(){
-    int flag=1,j=0,a=0,counter=0,satr=0,toll_matn;
+    int flag=1,j=0,a=0,counter=0,satr=0,fasele=0,toll_matn;
     int len=strlen(matn_amaliat);
     for(int i=0;i<len;++i){
         if(matn_amaliat[i]=='"'){
@@ -286,44 +286,53 @@ void removetstr(){
                     }
                     i++;
                     if(matn_amaliat[i]=='-'&&(matn_amaliat[i+1]=='b'||matn_amaliat[i+1]=='f')){
-                        int jahat=1;
-                        if(matn_amaliat[i+1]=='f')
-                            fseek(fptr,tedad,SEEK_CUR);
-                        fseek(fptr,1,SEEK_CUR);
-                        memset(matn_file,"\0",sizeof(matn_file));
-                        int z=0,b=0;
-                        if(satr>1)
-                        fseek(fptr,-1,SEEK_CUR);
-                        char ch=fgetc(fptr);
-                        while (ch!=EOF){
-                            if(ch=='\n')
-                                b++;
-                            matn_file[z]=ch;
-                            ch=fgetc(fptr);
+                        char character;
+                        int shomare_satr=1;
+                        int check_fasele=0;
+                        int z=0,d=1;
+                        if(matn_amaliat[i+1]=='b')
+                            d=-1;
+                        while(shomare_satr<satr){
+                            character=fgetc(fptr);
+                            if(character=='\n')
+                                shomare_satr++;
+                            if(character==EOF){
+                                invalids(3);
+                                return;
+                            }
+                            matn_file[z]=character;
                             z++;
                         }
-//                        printf("%s\n",matn_file);
-                        fseek(fptr,-z-tedad-b,SEEK_CUR);
-                        for (int i = 0; i < z; i++)
-                            fprintf(fptr,"%c",matn_file[i]);
-                        len=ftell(fptr);
-                        fseek(fptr,0,SEEK_SET);
-                        int len2=0;
-                        z=0;
-                        while(len2!=len){
-                            ch=fgetc(fptr);
-                            matn_file[z]=ch;
+                        while(check_fasele<fasele){
+                            character=fgetc(fptr);
+                            if(character==EOF){
+                                invalids(3);
+                                return;
+                            }
+                            check_fasele++;
+                            matn_file[z]=character;
                             z++;
-                            len2=ftell(fptr);
-                        } 
-                        fclose(fptr);
-                        fptr=fopen(name_of_file,"w");
-//                        printf("%s\n",matn_file);
-                        for(int i=0;i<z;i++){
-                            fprintf(fptr,"%c",matn_file[i]);
+                        }
+                        len=z;
+                        while(character!=EOF){
+                            character=fgetc(fptr);
+                            matn_file[z]=character;
+                            z++;
                         }
                         fclose(fptr);
-                        return;
+                        fopen(name_of_file,"w+");
+                        for(int i=0;i<z-1;i++){
+                            if(d==1){
+                                if(i<len||i>=len+tedad)
+                                    fprintf(fptr,"%c",matn_file[i]);
+                            }
+                            else{
+                                if(i<len-tedad||i>=len){
+                                    fprintf(fptr,"%c",matn_file[i]);
+                                }
+                            }
+                        }
+                        fclose(fptr);
                     }
                     else{
                         invalids(4);
@@ -332,7 +341,6 @@ void removetstr(){
                     break;
                 case 1:
                     i++;
-                    int fasele=0;
                     while (matn_amaliat[i]!=':'){
                         satr=10*satr+matn_amaliat[i]-48;
                         
@@ -347,21 +355,6 @@ void removetstr(){
                         invalids(4);
                         return;
                     }
-                    fseek(fptr,0,SEEK_SET);
-                    int shomare_khat=1;
-                    char ch;
-                    while (shomare_khat<satr){
-                        do {
-                            ch=fgetc(fptr);
-                		    fseek(fptr,1,SEEK_CUR);
-                    	} while (ch!='\n'&&ch!=EOF);
-                            if(ch==EOF){
-                                invalids(3);
-                                return;
-                            }
-                        shomare_khat++;
-                    }
-                    fseek(fptr,fasele-1,SEEK_CUR);
                     j=i+1;
                     counter++;
                     break;
@@ -375,7 +368,7 @@ void removetstr(){
 }
 int main(){
     while (1){
-        chdir("\root");
+        chdir("root");
         scanf("%s",&noe_amaliat);
         if(!strcmp(noe_amaliat,"exit"))
             return 0;
