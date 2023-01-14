@@ -7,6 +7,7 @@ char matn_file[100];
 char matn[10000];
 char name[1000];
 char name_of_file[1000];
+char clipboard[1000];
 FILE *fptr;
 void invalids(int n){
     switch (n){
@@ -366,6 +367,141 @@ void removetstr(){
         }
     }
 }
+void copy(){
+    memset(clipboard,NULL,sizeof(clipboard));
+    int flag=1,j=0,a=0,counter=0,satr=0,fasele=0,toll_matn;
+    int len=strlen(matn_amaliat);
+    for(int i=0;i<len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if(matn_amaliat[i]==' '&&flag){
+            memset(name, '\0', sizeof(name));
+            switch (counter){
+                case 0:
+                    memset(name, '\0', sizeof(name));
+                    if(matn_amaliat[i-1]=='"')
+                        strncpy(name,matn_amaliat+j+1,i-j-3);
+                    else
+                        strncpy(name,matn_amaliat+j,i-j);
+                    if(fopen(name,"r")==NULL){
+                        invalids(2);
+                        return;
+                    }
+                    else{
+                        fptr=fopen(name,"r+");
+                        int len=strlen(name);
+                        strncpy(name_of_file,name,len);
+                    }
+                    j=i+1;
+                    counter++;
+                    break;
+                case 2:
+                    i++;
+                    int tedad=0;
+                    while (matn_amaliat[i]!=32){
+                        tedad=tedad*10+matn_amaliat[i]-48;
+                        i++;
+                    }
+                    i++;
+                    if(matn_amaliat[i]=='-'&&(matn_amaliat[i+1]=='b'||matn_amaliat[i+1]=='f')){
+                        char character;
+                        int shomare_satr=1;
+                        int check_fasele=0;
+                        int z=0,d=1;
+                        if(matn_amaliat[i+1]=='b')
+                            d=-1;
+                        while(shomare_satr<satr){
+                            character=fgetc(fptr);
+                            if(character=='\n')
+                                shomare_satr++;
+                            if(character==EOF){
+                                invalids(3);
+                                return;
+                            }
+                            matn_file[z]=character;
+                            z++;
+                        }
+                        while(check_fasele<fasele){
+                            character=fgetc(fptr);
+                            if(character==EOF){
+                                invalids(3);
+                                return;
+                            }
+                            check_fasele++;
+                            matn_file[z]=character;
+                            z++;
+                        }
+                        len=z;
+                        while(character!=EOF){
+                            character=fgetc(fptr);
+                            matn_file[z]=character;
+                            z++;
+                        }
+                        fclose(fptr);
+                        int j=0;
+                        for(int i=0;i<z-1;i++){
+                            if(d==1){
+                                if(i>=len&&i<len+tedad){
+                                    clipboard[j]=matn_file[i];
+                                    j++;
+                                }
+                            }
+                            else{
+                                if(i>=len-tedad&&i<len){
+                                    clipboard[j]=matn_file[i];
+                                    j++;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        invalids(4);
+                        return;
+                    }
+                    break;
+                case 1:
+                    i++;
+                    while (matn_amaliat[i]!=':'){
+                        satr=10*satr+matn_amaliat[i]-48;
+                        
+                        i++;
+                    }
+                    i++;
+                    while (matn_amaliat[i]!=' '){
+                        fasele=10*fasele+matn_amaliat[i]-48;
+                        i++;
+                    }
+                    if(satr<=0||fasele<0){
+                        invalids(4);
+                        return;
+                    }
+                    j=i+1;
+                    counter++;
+                    break;
+                default:
+                    j=i+1;
+                    counter++;
+                    break;
+            }
+        }
+    }
+}
 int main(){
     while (1){
         chdir("root");
@@ -385,6 +521,10 @@ int main(){
         }
         else if(!strcmp(noe_amaliat,"removetstr")){
             removetstr();
+        }
+        else if(!strcmp(noe_amaliat,"copystr")){
+            copy();
+            printf("%s",clipboard);
         }
     }
 }
