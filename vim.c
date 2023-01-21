@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<string.h>
+#include <stdlib.h>
 #include<direct.h>
 char noe_amaliat[1000];
 char matn_amaliat[1000];
@@ -8,6 +9,8 @@ char matn[10000];
 char name[1000];
 char name_of_file[1000];
 char clipboard[1000];
+char files[100][1000];
+char* token;
 FILE *fptr;
 void invalids(int n){
     switch (n){
@@ -753,34 +756,316 @@ void pastestr(){
         fclose(fptr);
         return;    
 }
+
+void grep(){
+    token--;
+    if(!(*(token-1)=='-' &&*(token)=='-'&&*(token+1)=='s' && *(token+2)=='t' && *(token+3)=='r' && *(token+4)=='\0')){
+        invalids(4);
+        return;
+    }
+	token = strtok(NULL, "\n");
+	strcpy(matn_amaliat,token);
+    int i=0,toll_matn,flag=1,tedad_file=0;
+    while(1){
+        if(matn_amaliat[i+1]=='-'&&matn_amaliat[i+2]=='-'&&matn_amaliat[i+3]=='f' && matn_amaliat[i+4]=='i' && matn_amaliat[i+5]=='l' && matn_amaliat[i+6]=='e' && matn_amaliat[i+7]=='s'){
+            memset(name, '\0', sizeof(name));
+            memset(matn, '\0', sizeof(matn));
+            if(matn_amaliat[i-1]=='"'){
+                strncpy(name,matn_amaliat+1,i-2);
+                toll_matn=i-2;
+            }
+            else{
+                strncpy(name,matn_amaliat,i);
+                toll_matn=i;
+            }
+            break;
+        }
+        i++;
+    }
+    strcpy(matn_file,name);
+    i+=9;
+    int j=i;
+    int a=0;
+    int len=strlen(matn_amaliat);
+    for(i;i<=len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                printf("%s ",name);
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if((matn_amaliat[i]==' ' || i==len)&&flag){
+            memset(name, '\0', sizeof(name));
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                strncpy(name,matn_amaliat+j+1,i-j-3);
+            else
+                strncpy(name,matn_amaliat+j,i-j);
+            if(fopen(name,"r")==NULL){
+                printf("%s ",name);
+                invalids(2);
+                    return;
+                }
+            else{
+                strcpy(files[tedad_file],name);
+                tedad_file++;
+            }
+            j=i+1;
+        }
+    }
+    int num=0;
+    for(i=0 ; i< tedad_file ; i++){
+        fptr= fopen(files[i],"r");
+        while(!feof(fptr)){
+            fgets(name,100,fptr);
+            if(strstr(name, matn_file)){
+                printf("%s: %s",files[i],name);
+                num++;
+            }
+        }
+    }
+    if(num==0)
+        printf("This string does not exist in these files.");
+}
+void grep_counter(){
+	token = strtok(NULL, " ");
+    if(!(*(token)=='-'&&*(token+1)=='s' && *(token+2)=='t' && *(token+3)=='r' && *(token+4)=='\0')){
+        invalids(4);
+        return;
+    }
+	token = strtok(NULL, "\n");
+	strcpy(matn_amaliat,token);
+    int i=0,toll_matn,flag=1,tedad_file=0;
+    while(1){
+        if(matn_amaliat[i+1]=='-'&&matn_amaliat[i+2]=='-'&&matn_amaliat[i+3]=='f' && matn_amaliat[i+4]=='i' && matn_amaliat[i+5]=='l' && matn_amaliat[i+6]=='e' && matn_amaliat[i+7]=='s'){
+            memset(name, '\0', sizeof(name));
+            memset(matn, '\0', sizeof(matn));
+            if(matn_amaliat[i-1]=='"'){
+                strncpy(name,matn_amaliat+1,i-2);
+                toll_matn=i-2;
+            }
+            else{
+                strncpy(name,matn_amaliat,i);
+                toll_matn=i;
+            }
+            break;
+        }
+        i++;
+    }
+    strcpy(matn_file,name);
+    i+=9;
+    int j=i;
+    int a=0;
+    int len=strlen(matn_amaliat);
+    for(i;i<=len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if((matn_amaliat[i]==' ' || i==len)&&flag){
+            memset(name, '\0', sizeof(name));
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                strncpy(name,matn_amaliat+j+1,i-j-3);
+            else
+                strncpy(name,matn_amaliat+j,i-j);
+            if(fopen(name,"r")==NULL){
+                printf("%s ",name);
+                invalids(2);
+                    return;
+                }
+            else{
+                strcpy(files[tedad_file],name);
+                tedad_file++;
+            }
+            j=i+1;
+        }
+    }
+    int num=0;
+    for(i=0 ; i< tedad_file ; i++){
+        fptr= fopen(files[i],"r");
+        while(!feof(fptr)){
+            fgets(name,100,fptr);
+            if(strstr(name, matn_file))
+                num++;
+        }
+    }
+    printf("%d\n",num);
+}
+void grep_files(){
+    	token = strtok(NULL, " ");
+    if(!(*(token)=='-'&&*(token+1)=='s' && *(token+2)=='t' && *(token+3)=='r' && *(token+4)=='\0')){
+        invalids(4);
+        return;
+    }
+	token = strtok(NULL, "\n");
+	strcpy(matn_amaliat,token);
+    int i=0,toll_matn,flag=1,tedad_file=0;
+    while(1){
+        if(matn_amaliat[i+1]=='-'&&matn_amaliat[i+2]=='-'&&matn_amaliat[i+3]=='f' && matn_amaliat[i+4]=='i' && matn_amaliat[i+5]=='l' && matn_amaliat[i+6]=='e' && matn_amaliat[i+7]=='s'){
+            memset(name, '\0', sizeof(name));
+            memset(matn, '\0', sizeof(matn));
+            if(matn_amaliat[i-1]=='"'){
+                strncpy(name,matn_amaliat+1,i-2);
+                toll_matn=i-2;
+            }
+            else{
+                strncpy(name,matn_amaliat,i);
+                toll_matn=i;
+            }
+            break;
+        }
+        i++;
+    }
+    strcpy(matn_file,name);
+    i+=9;
+    int j=i;
+    int a=0;
+    int len=strlen(matn_amaliat);
+    for(i;i<=len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if((matn_amaliat[i]==' ' || i==len)&&flag){
+            memset(name, '\0', sizeof(name));
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                strncpy(name,matn_amaliat+j+1,i-j-3);
+            else
+                strncpy(name,matn_amaliat+j,i-j);
+            if(fopen(name,"r")==NULL){
+                printf("%s ",name);
+                invalids(2);
+                    return;
+                }
+            else{
+                strcpy(files[tedad_file],name);
+                tedad_file++;
+            }
+            j=i+1;
+        }
+    }
+    int num=0;
+    for(i=0 ; i< tedad_file ; i++){
+        fptr= fopen(files[i],"r");
+        while(!feof(fptr)){
+            fgets(name,100,fptr);
+            if(strstr(name, matn_file)){
+                printf("%s\n",files[i]);
+                num++;
+            }
+        }
+        fclose(fptr);
+        if(num==0)
+            printf("This string does not exist in these files.");
+    }
+}
+
+void grep_checker(){
+    token = strtok(matn_amaliat, " - ");
+    switch (*token)
+    {
+    case 'c':
+        grep_counter();
+        break;
+    case 'l':
+        grep_files();
+        break;
+    case 's':
+        grep();
+        break;
+    default:
+        invalids(4);
+        break;
+    }
+}
+
 int main(){
     while (1){
-        chdir("root");
+        chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje\\root");
         scanf("%s",&noe_amaliat);
         if(!strcmp(noe_amaliat,"exit"))
             return 0;
-        scanf("%[^/]s",&matn_file);
-        scanf("/root/%[^\n]s",&matn_amaliat);
         if(!strcmp(noe_amaliat,"createfile")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
             creat_file();
         }
         else if(!strcmp(noe_amaliat,"insertstr")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
             insert();
         }
         else if(!strcmp(noe_amaliat,"cat")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
             cat();
         }
         else if(!strcmp(noe_amaliat,"removetstr")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
             removetstr();
         }
         else if(!strcmp(noe_amaliat,"copystr")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
             copy();
         }
         else if(!strcmp(noe_amaliat,"cutstr")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
             cut();
         }
         else if(!strcmp(noe_amaliat,"pastestr")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat); 
             pastestr();
+        }
+        else if(!strcmp(noe_amaliat,"grep")){
+            scanf("%[^\n]s",&matn_amaliat); 
+            grep_checker();
         }
     }
 }
