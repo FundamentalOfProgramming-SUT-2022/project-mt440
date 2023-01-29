@@ -12,13 +12,15 @@ char clipboard[1000];
 char files[100][1000];
 char* token;
 FILE *fptr;
+FILE *fptr1;
+FILE *fptr2;
 void invalids(int n){
     switch (n){
     case 1:
         printf("The file already exists.\n");
         break;
     case 2:
-        printf("file does not exists.\n");
+        printf("file or directory does not exists.\n");
         break;
     case 3:
         printf("You have reached the EOF, please change the position of the text.\n");
@@ -784,6 +786,7 @@ void grep(){
     }
     strcpy(matn_file,name);
     i+=9;
+    i++;
     int j=i;
     int a=0;
     int len=strlen(matn_amaliat);
@@ -822,11 +825,14 @@ void grep(){
             else{
                 strcpy(files[tedad_file],name);
                 tedad_file++;
+                chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje");
+                i++;
             }
             j=i+1;
         }
     }
     int num=0;
+    chdir("root");
     for(i=0 ; i< tedad_file ; i++){
         fptr= fopen(files[i],"r");
         while(!feof(fptr)){
@@ -838,10 +844,12 @@ void grep(){
         }
     }
     if(num==0)
-        printf("This string does not exist in these files.");
+        printf("This string does not exist in these files.\n");
 }
+
 void grep_counter(){
 	token = strtok(NULL, " ");
+    token++;
     if(!(*(token)=='-'&&*(token+1)=='s' && *(token+2)=='t' && *(token+3)=='r' && *(token+4)=='\0')){
         invalids(4);
         return;
@@ -867,6 +875,7 @@ void grep_counter(){
     }
     strcpy(matn_file,name);
     i+=9;
+    i++;
     int j=i;
     int a=0;
     int len=strlen(matn_amaliat);
@@ -904,11 +913,14 @@ void grep_counter(){
             else{
                 strcpy(files[tedad_file],name);
                 tedad_file++;
+                chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje");
+                i++;
             }
             j=i+1;
         }
     }
     int num=0;
+    chdir("root");
     for(i=0 ; i< tedad_file ; i++){
         fptr= fopen(files[i],"r");
         while(!feof(fptr)){
@@ -919,8 +931,10 @@ void grep_counter(){
     }
     printf("%d\n",num);
 }
+
 void grep_files(){
     	token = strtok(NULL, " ");
+        token++;
     if(!(*(token)=='-'&&*(token+1)=='s' && *(token+2)=='t' && *(token+3)=='r' && *(token+4)=='\0')){
         invalids(4);
         return;
@@ -946,6 +960,7 @@ void grep_files(){
     }
     strcpy(matn_file,name);
     i+=9;
+    i++;
     int j=i;
     int a=0;
     int len=strlen(matn_amaliat);
@@ -983,11 +998,14 @@ void grep_files(){
             else{
                 strcpy(files[tedad_file],name);
                 tedad_file++;
+                chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje");
+                i++;
             }
             j=i+1;
         }
     }
     int num=0;
+    chdir("root");
     for(i=0 ; i< tedad_file ; i++){
         fptr= fopen(files[i],"r");
         while(!feof(fptr)){
@@ -999,7 +1017,7 @@ void grep_files(){
         }
         fclose(fptr);
         if(num==0)
-            printf("This string does not exist in these files.");
+            printf("This string does not exist in these files.\n");
     }
 }
 
@@ -1021,7 +1039,101 @@ void grep_checker(){
         break;
     }
 }
-
+auto_indent(){
+    int j=0,a=0,flag=1;
+    int len=strlen(matn_amaliat);
+    for(int i=0;i<=len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if(i==len&&flag){
+            memset(name, '\0', sizeof(name));
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                strncpy(name,matn_amaliat+j+1,i-j-3);
+            else
+                strncpy(name,matn_amaliat+j,i-j);
+            if(fptr1=fopen(name,"r")==NULL){
+                printf("%s ",name);
+                invalids(2);
+                    return;
+            }
+        }
+    }
+    fclose(fptr1);
+    fptr1=fopen(name,"r");
+    char name_cheker[1000];
+    strcpy(name_cheker,name);
+    while(fptr2=fopen(name_cheker,"r")!=NULL){
+        strcat(name_cheker,"a");
+    }
+    fclose(fptr2);
+    fptr2=fopen(name_cheker,"w");
+    char c = fgetc(fptr1);
+    char c_cheker=' ';
+    int tedad_tab=0;
+    while (c != EOF)
+    {
+        if(c==' '){
+            while(c==' ')
+                c = fgetc(fptr1);
+            if(c_cheker!='}' && c_cheker!='{')
+                fputc(' ',fptr2);
+            c_cheker=' ';
+        }
+        if(c=='}'){
+            fputc('\n',fptr2);
+            tedad_tab--;
+            for(j=0;j<4*tedad_tab;j++)
+                fputc(' ',fptr2);
+        }
+        if(c=='{' && c_cheker!=' ' && c_cheker!='{' && c_cheker !='}')
+           fputc(' ',fptr2);
+        fputc(c, fptr2);
+        if(c=='}'&& tedad_tab==0)
+            fputc('\n',fptr2);
+        if(c=='{'){
+            tedad_tab++;
+            fputc('\n',fptr2);
+            for(j=0;j<4*tedad_tab;j++)
+                fputc(' ',fptr2);
+        }
+        c_cheker=c;
+        c = fgetc(fptr1);
+    }
+    fclose(fptr1);
+    fclose(fptr2);
+    fptr1=fopen(name_cheker,"r");
+    fptr2=fopen(name,"w");
+    c_cheker = fgetc(fptr1);
+    c = fgetc(fptr1);
+    while (c != EOF)
+    {
+        fputc(c_cheker, fptr2);
+        c_cheker=c;
+        c = fgetc(fptr1);
+    }
+    if(c_cheker!='\n')
+        fputc(c_cheker,fptr2);
+    fclose(fptr1);
+    fclose(fptr2);
+    remove(name_cheker);
+}
 int main(){
     while (1){
         chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje\\root");
@@ -1064,8 +1176,14 @@ int main(){
             pastestr();
         }
         else if(!strcmp(noe_amaliat,"grep")){
-            scanf("%[^\n]s",&matn_amaliat); 
+            scanf("%[^\n]s",&matn_amaliat);
+            chdir(".."); 
             grep_checker();
+        }
+        else if(!strcmp(noe_amaliat,"auto-indent")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
+            auto_indent();
         }
     }
 }
