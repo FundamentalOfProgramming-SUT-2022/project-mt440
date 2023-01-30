@@ -8,9 +8,11 @@ char matn_file[100];
 char matn[10000];
 char name[1000];
 char name_of_file[1000];
-char clipboard[1000];
+char clipboard[10000];
 char files[100][1000];
 char* token;
+char* token1;
+char* token2;
 FILE *fptr;
 FILE *fptr1;
 FILE *fptr2;
@@ -1134,6 +1136,92 @@ auto_indent(){
     fclose(fptr2);
     remove(name_cheker);
 }
+compare(){
+    int i=0,tedad_file=0,j=0,a=0,flag=1;
+    int len=strlen(matn_amaliat);
+    for(i;i<=len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                printf("%s ",name);
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if((matn_amaliat[i]==' ' || i==len)&&flag){
+            memset(name, '\0', sizeof(name));
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                strncpy(name,matn_amaliat+j+1,i-j-3);
+            else
+                strncpy(name,matn_amaliat+j,i-j);
+            if(fopen(name,"r")==NULL){
+                printf("%s ",name);
+                invalids(2);
+                    return;
+                }
+            else{
+                strcpy(files[tedad_file],name);
+                tedad_file++;
+                chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje");
+                i++;
+            }
+            j=i+1;
+        }
+    }
+    chdir("root");
+    if(tedad_file!=2)
+        invalids(4);
+    fptr1=fopen(files[0],"r");
+    fptr2=fopen(files[1],"r");
+    char matn1[10000];
+    char matn2[10000];
+    int num=0,shomare_khat=1,shomare_kalame=1,sabet;
+    while((!feof(fptr1)) && (!feof(fptr2))){
+        fgets(matn1,10000,fptr1);
+        fgets(matn2,10000,fptr2);
+        if(strcmp(matn1,matn2)!=0){
+            printf("============ #%d ============\n",shomare_khat);
+            printf("%s\n",matn1);
+            printf("%s\n",matn2);
+        }
+        shomare_khat++;
+    }
+    int khat_nahayy=0;
+    if((!feof(fptr1)) || (!feof(fptr2))){
+        if(!feof(fptr1)){
+            memset(matn1,'\0',sizeof(matn1));
+            while(!feof(fptr1)){
+                fgets(matn2,10000,fptr1);
+                strcat(matn1,matn2);
+                khat_nahayy++;
+            }
+            printf("<<<<<<<<<<<< #%d - #%d <<<<<<<<<<<<\n",shomare_khat,shomare_khat+khat_nahayy-1);
+            printf("%s\n",matn1);
+        }
+        else{
+            memset(matn2,'\0',sizeof(matn2));
+            while(!feof(fptr2)){
+                fgets(matn1,10000,fptr2);
+                strcat(matn2,matn1);
+                khat_nahayy++;
+            }
+            printf(">>>>>>>>>>>> #%d - #%d >>>>>>>>>>>>>\n",shomare_khat,shomare_khat+khat_nahayy-1);
+            printf("%s\n",matn2);
+        }
+    }
+}
 int main(){
     while (1){
         chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje\\root");
@@ -1184,6 +1272,12 @@ int main(){
             scanf("%[^/]s",&matn_file);
             scanf("/root/%[^\n]s",&matn_amaliat);
             auto_indent();
+        }
+        else if(!strcmp(noe_amaliat,"compare")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/%[^\n]s",&matn_amaliat);
+            chdir(".."); 
+            compare();
         }
     }
 }
