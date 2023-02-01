@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include<direct.h>
 #include<dirent.h>
+#include <windows.h>
 char noe_amaliat[1000];
 char matn_amaliat[1000];
 char matn_file[100];
@@ -11,6 +12,8 @@ char name[1000];
 char name_of_file[1000];
 char clipboard[10000];
 char files[100][1000];
+char file_checker[10000];
+char file_checker2[10000];
 char* token;
 char* token1;
 char* token2;
@@ -71,6 +74,11 @@ void creat_file(){
     else{
         fptr=fopen(name,"w");
         fclose(fptr);
+        strcpy(matn,".");
+        strcat(matn,name);
+        fptr=fopen(matn,"w");
+        fclose(fptr);
+        SetFileAttributes(matn,FILE_ATTRIBUTE_HIDDEN);
         return;
     }
 }
@@ -111,6 +119,7 @@ void insert(){
                     }
                     else{
                         fptr=fopen(name,"r+");
+                        strcpy(name_of_file,name);
                     }
                     j=i+1;
                     counter++;
@@ -159,6 +168,29 @@ void insert(){
                         invalids(4);
                         return;
                     }
+                    strcpy(file_checker,".");
+                    strcat(file_checker,name_of_file);
+                    while (fptr1=fopen(file_checker,"r")!=NULL){
+                        strrev(file_checker);
+                        strcat(file_checker,".");
+                        strrev(file_checker);
+                    }
+                    while(strcmp(file_checker,name_of_file)!=0){
+                        strncpy(file_checker2,file_checker+1,strlen(file_checker));
+                        SetFileAttributes(file_checker,FILE_ATTRIBUTE_NORMAL);
+                        fptr1=fopen(file_checker2,"r");
+                        fptr2=fopen(file_checker,"w");
+                        char c;
+                        c = fgetc(fptr1);
+                        while (c != EOF){
+                            fputc(c, fptr2);
+                            c = fgetc(fptr1);
+                        }
+                        fclose(fptr2);
+                        fclose(fptr1);
+                        SetFileAttributes(file_checker,FILE_ATTRIBUTE_HIDDEN);
+                        strcpy(file_checker,file_checker2);
+                    }
                     fseek(fptr,0,SEEK_SET);
                     int shomare_khat=1;
                     char ch;
@@ -173,7 +205,14 @@ void insert(){
                             }
                         shomare_khat++;
                     }
-                    fseek(fptr,fasele,SEEK_CUR);
+                    for(int tedad_fasele=0;tedad_fasele<fasele;tedad_fasele++){
+                            ch=fgetc(fptr);
+                            if(ch==EOF){
+                                invalids(3);
+                                return;
+                            }
+
+                    }
                     len=strlen(matn);
                     int z=0,b=0;
                     ch=0;
@@ -303,6 +342,29 @@ void removetstr(){
                         int shomare_satr=1;
                         int check_fasele=0;
                         int z=0,d=1;
+                        strcpy(file_checker,".");
+                        strcat(file_checker,name_of_file);
+                        while (fptr1=fopen(file_checker,"r")!=NULL){
+                            strrev(file_checker);
+                            strcat(file_checker,".");
+                            strrev(file_checker);
+                        }
+                        while(strcmp(file_checker,name_of_file)!=0){
+                            strncpy(file_checker2,file_checker+1,strlen(file_checker));
+                            SetFileAttributes(file_checker,FILE_ATTRIBUTE_NORMAL);
+                            fptr1=fopen(file_checker2,"r");
+                            fptr2=fopen(file_checker,"w");
+                            char c;
+                            c = fgetc(fptr1);
+                            while (c != EOF){
+                                fputc(c, fptr2);
+                                c = fgetc(fptr1);
+                            }
+                            fclose(fptr2);
+                            fclose(fptr1);
+                            SetFileAttributes(file_checker,FILE_ATTRIBUTE_HIDDEN);
+                            strcpy(file_checker,file_checker2);
+                        }
                         if(matn_amaliat[i+1]=='b')
                             d=-1;
                         while(shomare_satr<satr){
@@ -570,6 +632,29 @@ void cut(){
                         int shomare_satr=1;
                         int check_fasele=0;
                         int z=0,d=1;
+                        strcpy(file_checker,".");
+                        strcat(file_checker,name_of_file);
+                        while (fptr1=fopen(file_checker,"r")!=NULL){
+                            strrev(file_checker);
+                            strcat(file_checker,".");
+                            strrev(file_checker);
+                        }
+                        while(strcmp(file_checker,name_of_file)!=0){
+                            strncpy(file_checker2,file_checker+1,strlen(file_checker));
+                            SetFileAttributes(file_checker,FILE_ATTRIBUTE_NORMAL);
+                            fptr1=fopen(file_checker2,"r");
+                            fptr2=fopen(file_checker,"w");
+                            char c;
+                            c = fgetc(fptr1);
+                            while (c != EOF){
+                                fputc(c, fptr2);
+                                c = fgetc(fptr1);
+                            }
+                            fclose(fptr2);
+                            fclose(fptr1);
+                            SetFileAttributes(file_checker,FILE_ATTRIBUTE_HIDDEN);
+                            strcpy(file_checker,file_checker2);
+                        }
                         if(matn_amaliat[i+1]=='b')
                             d=-1;
                         while(shomare_satr<satr){
@@ -744,6 +829,29 @@ void pastestr(){
             check_fasele++;
             matn_file[z]=character;
             z++;
+        }
+        strcpy(file_checker,".");
+        strcat(file_checker,name_of_file);
+        while (fptr1=fopen(file_checker,"r")!=NULL){
+            strrev(file_checker);
+            strcat(file_checker,".");
+            strrev(file_checker);
+        }
+        while(strcmp(file_checker,name_of_file)!=0){
+            strncpy(file_checker2,file_checker+1,strlen(file_checker));
+            SetFileAttributes(file_checker,FILE_ATTRIBUTE_NORMAL);
+            fptr1=fopen(file_checker2,"r");
+            fptr2=fopen(file_checker,"w");
+            char c;
+            c = fgetc(fptr1);
+            while (c != EOF){
+                fputc(c, fptr2);
+                c = fgetc(fptr1);
+            }
+            fclose(fptr2);
+            fclose(fptr1);
+            SetFileAttributes(file_checker,FILE_ATTRIBUTE_HIDDEN);
+            strcpy(file_checker,file_checker2);
         }
         len=z;
         while(character!=EOF){
@@ -1046,7 +1154,7 @@ void grep_checker(){
         break;
     }
 }
-auto_indent(){
+void auto_indent(){
     int j=0,a=0,flag=1;
     int len=strlen(matn_amaliat);
     for(int i=0;i<=len;++i){
@@ -1082,7 +1190,31 @@ auto_indent(){
             }
         }
     }
+    strcpy(name_of_file,name);
     fclose(fptr1);
+    strcpy(file_checker,".");
+    strcat(file_checker,name_of_file);
+    while (fptr1=fopen(file_checker,"r")!=NULL){
+        strrev(file_checker);
+        strcat(file_checker,".");
+        strrev(file_checker);
+    }
+    while(strcmp(file_checker,name_of_file)!=0){
+        strncpy(file_checker2,file_checker+1,strlen(file_checker));
+        SetFileAttributes(file_checker,FILE_ATTRIBUTE_NORMAL);
+        fptr1=fopen(file_checker2,"r");
+        fptr2=fopen(file_checker,"w");
+        char c;
+        c = fgetc(fptr1);
+        while (c != EOF){
+            fputc(c, fptr2);
+            c = fgetc(fptr1);
+            }
+        fclose(fptr2);
+        fclose(fptr1);
+        SetFileAttributes(file_checker,FILE_ATTRIBUTE_HIDDEN);
+        strcpy(file_checker,file_checker2);
+                    }
     fptr1=fopen(name,"r");
     char name_cheker[1000];
     strcpy(name_cheker,name);
@@ -1141,7 +1273,7 @@ auto_indent(){
     fclose(fptr2);
     remove(name_cheker);
 }
-compare(){
+void compare(){
 
     int i=0,tedad_file=0,j=0,a=0,flag=1;
     int len=strlen(matn_amaliat);
@@ -1286,6 +1418,71 @@ void depth_checker(){
     else
         tree(".",0,depth);
 }
+
+void undo(){
+    int j=0,a=0,flag=1;
+    int len=strlen(matn_amaliat);
+    for(int i=0;i<=len;++i){
+        if(matn_amaliat[i]=='"'){
+            if(flag==1)
+                flag=0;
+            else if(flag==0)
+                flag=1;
+        }
+        if(matn_amaliat[i]=='/'&&flag){
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                a=1;
+            strncpy(name,matn_amaliat+j+a,i-j-2*a);
+            if(chdir(name)!=NULL){
+                invalids(2);
+                return;
+            }
+            j=i+1;
+            a=0;
+        }
+        if(i==len&&flag){
+            memset(name, '\0', sizeof(name));
+            memset(name, '\0', sizeof(name));
+            if(matn_amaliat[i-1]=='"')
+                strncpy(name,matn_amaliat+j+1,i-j-3);
+            else
+                strncpy(name,matn_amaliat+j,i-j);
+            if(fptr1=fopen(name,"r")==NULL){
+                printf("%s ",name);
+                invalids(2);
+                    return;
+            }
+        }
+    }
+    fclose(fptr1);
+    strcpy(file_checker,name);
+    strcpy(file_checker2,file_checker);
+    strrev(file_checker2);
+    strcat(file_checker2,".");
+    strrev(file_checker2);
+    while(fopen(file_checker2,"r")!=NULL){
+        fptr1=fopen(file_checker2,"r");
+        SetFileAttributes(file_checker,FILE_ATTRIBUTE_NORMAL);
+        fptr2=fopen(file_checker,"w");
+        char c;
+         c = fgetc(fptr1);
+        while (c != EOF){
+            fputc(c, fptr2);
+            c = fgetc(fptr1);
+        }
+        SetFileAttributes(file_checker,FILE_ATTRIBUTE_HIDDEN);
+        strcpy(file_checker,file_checker2);
+        strcpy(file_checker2,file_checker);
+        strrev(file_checker2);
+        strcat(file_checker2,".");
+        strrev(file_checker2);
+        fclose(fptr1);
+        fclose(fptr2);
+    }
+        SetFileAttributes(name,FILE_ATTRIBUTE_NORMAL);  
+}
+
 int main(){
     while (1){
         chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje\\root");
@@ -1344,9 +1541,12 @@ int main(){
             compare();
         }
         else if(!strcmp(noe_amaliat,"tree")){
-            chdir("..");
-            chdir("..");
             depth_checker();
+        }
+        else if(!strcmp(noe_amaliat,"undo")){
+            scanf("%[^/]s",&matn_file);
+            scanf("/root/%[^\n]s",&matn_amaliat);
+            undo();
         }
     }
 }
