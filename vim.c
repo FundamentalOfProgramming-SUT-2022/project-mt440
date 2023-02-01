@@ -2,6 +2,7 @@
 #include<string.h>
 #include <stdlib.h>
 #include<direct.h>
+#include<dirent.h>
 char noe_amaliat[1000];
 char matn_amaliat[1000];
 char matn_file[100];
@@ -16,6 +17,7 @@ char* token2;
 FILE *fptr;
 FILE *fptr1;
 FILE *fptr2;
+int depth;
 void invalids(int n){
     switch (n){
     case 1:
@@ -28,6 +30,9 @@ void invalids(int n){
         printf("You have reached the EOF, please change the position of the text.\n");
     case 4:
         printf("invalid input.\n");
+        break;
+    case 5:
+        printf("invalid depth.\n");
         break;
     default:
         break;
@@ -1137,6 +1142,7 @@ auto_indent(){
     remove(name_cheker);
 }
 compare(){
+
     int i=0,tedad_file=0,j=0,a=0,flag=1;
     int len=strlen(matn_amaliat);
     for(i;i<=len;++i){
@@ -1222,12 +1228,70 @@ compare(){
         }
     }
 }
+void tree(char a[], int x , int max){
+    struct dirent *files;
+    char b[1000];
+    strcpy(b,a);
+    DIR *dir = opendir(a);
+    if (dir == NULL ||( x > max && max != -1)){
+        return ;
+    }
+    while ((files = readdir(dir)) != NULL){
+        if(files->d_name[0]!='.'){
+        for(int i=0;i<4*x-1;i++)
+            printf(" ");
+        if(x!=0)
+            printf("|");
+        if(x)
+            for(int i=1;i<4;i++)
+                printf("_");
+        printf("%s\n", files->d_name);
+        strcat(b,"/");
+        strcat(b,files->d_name);
+        tree(b,x+1,max);
+        strcpy(b,a);
+    }
+   }
+   closedir(dir);
+}
+void depth_checker(){
+    depth=0;
+    int zarib=1;
+    char character;
+    scanf("%c",&character);
+    if(character!=' '){
+        invalids(5);
+        return;
+    }
+    scanf("%c",&character);
+    if(character=='-'){
+        zarib=-1;
+        scanf("%c",&character);
+    }
+    if(character=='\n'){
+        invalids(5);   
+        return;
+    }
+    while(character!='\n'){
+        if(character<'0'||character>'9'){
+            depth = -2;
+            break;
+        }
+        depth=10*depth+character-48;
+        scanf("%c",&character);
+    }
+    depth=depth * zarib;
+    if(depth<-1)
+        invalids(5);
+    else
+        tree(".",0,depth);
+}
 int main(){
     while (1){
         chdir("C:\\Users\\torab\\OneDrive\\Documents\\codes\\proje\\root");
         scanf("%s",&noe_amaliat);
         if(!strcmp(noe_amaliat,"exit"))
-            return 0;
+            return ;
         if(!strcmp(noe_amaliat,"createfile")){
             scanf("%[^/]s",&matn_file);
             scanf("/root/%[^\n]s",&matn_amaliat);
@@ -1278,6 +1342,11 @@ int main(){
             scanf("/%[^\n]s",&matn_amaliat);
             chdir(".."); 
             compare();
+        }
+        else if(!strcmp(noe_amaliat,"tree")){
+            chdir("..");
+            chdir("..");
+            depth_checker();
         }
     }
 }
