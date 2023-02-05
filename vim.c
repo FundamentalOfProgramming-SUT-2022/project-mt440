@@ -27,7 +27,7 @@ void invalids(int n){
         printf("The file already exists.\n");
         break;
     case 2:
-        printf("file or directory does not exists.\n");
+        printf("directory does not exists.\n");
         break;
     case 3:
         printf("You have reached the EOF, please change the position of the text.\n");
@@ -36,6 +36,8 @@ void invalids(int n){
         break;
     case 5:
         printf("invalid depth.\n");
+    case 6:
+        printf("file does not exists.\n");
         break;
     default:
         break;
@@ -114,7 +116,7 @@ void insert(){
                     else
                         strncpy(name,matn_amaliat+j,i-j);
                     if(fopen(name,"r")==NULL){
-                        invalids(2);
+                        invalids(6);
                         return;
                     }
                     else{
@@ -273,7 +275,7 @@ void cat(){
     else
         strncpy(name,matn_amaliat+j,len-j);
     if(fopen(name,"r")==NULL){
-        invalids(2);
+        invalids(6);
         return;
     }
     else{
@@ -318,7 +320,7 @@ void removetstr(){
                     else
                         strncpy(name,matn_amaliat+j,i-j);
                     if(fopen(name,"r")==NULL){
-                        invalids(2);
+                        invalids(6);
                         return;
                     }
                     else{
@@ -473,7 +475,7 @@ void copy(){
                     else
                         strncpy(name,matn_amaliat+j,i-j);
                     if(fopen(name,"r")==NULL){
-                        invalids(2);
+                        invalids(6);
                         return;
                     }
                     else{
@@ -608,7 +610,7 @@ void cut(){
                     else
                         strncpy(name,matn_amaliat+j,i-j);
                     if(fopen(name,"r")==NULL){
-                        invalids(2);
+                        invalids(6);
                         return;
                     }
                     else{
@@ -773,7 +775,7 @@ void pastestr(){
                     else
                         strncpy(name,matn_amaliat+j,i-j);
                     if(fopen(name,"r")==NULL){
-                        invalids(2);
+                        invalids(6);
                         return;
                     }
                     else{
@@ -934,7 +936,7 @@ void grep(){
                 strncpy(name,matn_amaliat+j,i-j);
             if(fopen(name,"r")==NULL){
                 printf("%s ",name);
-                invalids(2);
+                invalids(6);
                     return;
                 }
             else{
@@ -1185,7 +1187,7 @@ void auto_indent(){
                 strncpy(name,matn_amaliat+j,i-j);
             if(fptr1=fopen(name,"r")==NULL){
                 printf("%s ",name);
-                invalids(2);
+                invalids(6);
                     return;
             }
         }
@@ -1228,8 +1230,8 @@ void auto_indent(){
     int tedad_tab=0;
     while (c != EOF)
     {
-        if(c==' '){
-            while(c==' ')
+        if(c==' '||c=='\n'){
+            while(c==' '||c=='\n')
                 c = fgetc(fptr1);
             if(c_cheker!='}' && c_cheker!='{')
                 fputc(' ',fptr2);
@@ -1241,7 +1243,7 @@ void auto_indent(){
             for(j=0;j<4*tedad_tab;j++)
                 fputc(' ',fptr2);
         }
-        if(c=='{' && c_cheker!=' ' && c_cheker!='{' && c_cheker !='}')
+        if(c=='{' &&( c_cheker!=' ' || c_cheker!='\n') && c_cheker!='{' && c_cheker !='}')
            fputc(' ',fptr2);
         fputc(c, fptr2);
         if(c=='}'&& tedad_tab==0)
@@ -1306,7 +1308,7 @@ void compare(){
                 strncpy(name,matn_amaliat+j,i-j);
             if(fopen(name,"r")==NULL){
                 printf("%s ",name);
-                invalids(2);
+                invalids(6);
                     return;
                 }
             else{
@@ -1450,7 +1452,7 @@ void undo(){
                 strncpy(name,matn_amaliat+j,i-j);
             if(fptr1=fopen(name,"r")==NULL){
                 printf("%s ",name);
-                invalids(2);
+                invalids(6);
                     return;
             }
         }
